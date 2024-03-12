@@ -4,6 +4,8 @@ import Swiper from 'react-native-swiper';
 import COLORS from '../../assets/colors/Colors';
 import IMAGES from '../../assets/images/Images';
 import { globalStyle } from '../../styles/globalStyle';
+import { TextComponent } from '../../components';
+import { FONTFAMILY } from '../../../assets/fonts';
 
 const OnboardingScreen = ({navigation}: any) => {
     const [index, setIndex] = useState(0);
@@ -22,7 +24,7 @@ const OnboardingScreen = ({navigation}: any) => {
                 <Image source={IMAGES.Onboarding2} style={{ flex: 1, width: '100%', height: '100%' }} />
             </Swiper>
             <View style={[styles.directional]}>
-                {/* <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+                <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
                     <TextComponent
                         text='Skip'
                         color={COLORS.HEX_ORANGE}
@@ -33,7 +35,7 @@ const OnboardingScreen = ({navigation}: any) => {
                         text='Next'
                         color={COLORS.HEX_ORANGE}
                         font={FONTFAMILY.poppins_bold} />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
             </View>
         </View>
     )

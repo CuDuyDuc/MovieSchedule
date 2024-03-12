@@ -22,10 +22,23 @@ export const globalStyle = StyleSheet.create({
         height: 56,
         flexDirection: 'row'
     },
+    shadow: {
+        backgroundColor: COLORS.WHITE,
+        flex: 1,
+        marginRight: 7,
+        shadowColor: 'rgba(0, 0, 0.5)',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 5
+    },
     section: {
         paddingHorizontal: 15,
         paddingBottom: 20,
-    }, 
+    },
     row: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
