@@ -8,7 +8,7 @@ import { FONTFAMILY } from '../../assets/fonts';
 interface Props {
   icon?: ReactNode;
   text: string;
-  type?: 'orange' | 'text' | 'link'; // kiểu button mặc định hoặc chữ thường hoặc link chữ
+  type?: '#009245' | 'text' | 'link'; // kiểu button mặc định hoặc chữ thường hoặc link chữ
   color?: string;
   styles?: StyleProp<ViewStyle>;
   textColor?: string;
@@ -34,12 +34,12 @@ const ButtonComponent = (props: Props) => {
     disable } = props;
   // Destructuring đối tượng
   // custom button sau đó là style riêng và cuối cùng là styles đè lên
-  return  type === 'orange' ? (
+  return  type === '#009245' ? (
     <TouchableOpacity disabled={disable}
       onPress={onPress}
       style={[
         globalStyle.button, {
-          backgroundColor: color ? color : disable ? COLORS.HEX_LIGHT_GREY : COLORS.HEX_ORANGE,
+          backgroundColor: color ? color : disable ? COLORS.HEX_LIGHT_GREY : COLORS.GREEN,
         }, styles]}>
       {icon && iconFlex === 'left' && icon}
       <TextComponent
@@ -60,7 +60,7 @@ const ButtonComponent = (props: Props) => {
     <TouchableOpacity onPress={onPress}>
       <TextComponent 
         text={text}
-        color={type === 'link' ? COLORS.HEX_ORANGE : COLORS.HEX_BLACK}/>
+        color={type === 'link' ? COLORS.GREEN : COLORS.HEX_BLACK}/>
     </TouchableOpacity>
   )
 }

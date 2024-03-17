@@ -18,7 +18,7 @@ const OnboardingScreen = ({navigation}: any) => {
                 onIndexChanged={num => setIndex(num)}
                 index={index}
                 dotColor={COLORS.HEX_LIGHT_GRAY}
-                activeDotColor={COLORS.HEX_ORANGE}>
+                activeDotColor={COLORS.GREEN}>
                 <Image source={IMAGES.Onboarding} style={{ flex: 1, width: '100%', height: '100%' }} />
                 <Image source={IMAGES.Onboarding1} style={{ flex: 1, width: '100%', height: '100%' }} />
                 <Image source={IMAGES.Onboarding2} style={{ flex: 1, width: '100%', height: '100%' }} />
@@ -27,13 +27,13 @@ const OnboardingScreen = ({navigation}: any) => {
                 <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
                     <TextComponent
                         text='Skip'
-                        color={COLORS.HEX_ORANGE}
+                        color={COLORS.GREEN}
                         font={FONTFAMILY.poppins_bold} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => index < 2 ? setIndex(index + 1) : navigation.navigate('LoginScreen')}>
                     <TextComponent
                         text='Next'
-                        color={COLORS.HEX_ORANGE}
+                        color={COLORS.GREEN}
                         font={FONTFAMILY.poppins_bold} />
                 </TouchableOpacity>
             </View>

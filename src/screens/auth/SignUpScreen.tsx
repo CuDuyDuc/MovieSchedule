@@ -7,6 +7,8 @@ import { FONTFAMILY } from '../../../assets/fonts';
 import { Lock, Sms, User } from 'iconsax-react-native';
 import COLORS from '../../assets/colors/Colors';
 import { LoadingModal } from '../../modal';
+import authenticationAPI from '../../apis/authAPI';
+import { useDispatch } from 'react-redux';
 
 const initValues = {
   username: '',
@@ -21,6 +23,10 @@ const SignUpScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<any>();
   const [isDisable, setIsDisable] = useState(true);
+  // khi người dùng mới vào thì chưa nhập bất kỳ thông tin gì thì sẽ không click cho tới khi 
+  // điền đầy đủ thông tin.
+  // lưu vào trong data
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (
@@ -83,6 +89,27 @@ const SignUpScreen = ({ navigation }: any) => {
     setErrorMessage(data);
   };
 
+  const handleRegister = async () => {
+    const api = `/verification`;
+    setIsLoading(true);
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        api,
+        { email: values.email },
+        'post',
+      );
+
+      setIsLoading(false);
+
+      navigation.navigate('Verification', {
+        code: res.data.code,
+        ...values,
+      });
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -91,17 +118,18 @@ const SignUpScreen = ({ navigation }: any) => {
           styles={{
             justifyContent: 'center',
             alignItems: 'center',
-            marginTop: 75
+            marginTop: -250
           }}>
           <Image
             source={IMAGES.LoginBackgroud}
-            style={{ width: 142, height: 142, marginBottom: 20 }} />
+            style={{ marginBottom: 10 }} />
         </SectionComponent>
         <SectionComponent>
           <TextComponent
             title
             text='Đăng Ký'
             size={45}
+            color={COLORS.HEX_BLACK}
             font={FONTFAMILY.poppins_bold}
             styles={{ marginBottom: 20, }} />
           <InputComponent
@@ -149,12 +177,13 @@ const SignUpScreen = ({ navigation }: any) => {
         <SectionComponent styles={{ marginTop: 20 }}>
           <ButtonComponent
             text='ĐĂNG KÝ'
-            type='orange'
+            type='#009245'
+            onPress={handleRegister}
             disable={isDisable} />
         </SectionComponent>
         <SectionComponent>
           <RowComponent justify='center'>
-            <TextComponent text="Bạn đã có tài khoản?  " />
+            <TextComponent text="Bạn đã có tài khoản?  " color={COLORS.HEX_BLACK}/>
             <ButtonComponent type='link' text='Đăng nhập' onPress={() => {
               navigation.navigate('LoginScreen')
             }} />

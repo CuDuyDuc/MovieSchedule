@@ -6,6 +6,10 @@ import COLORS from '../../assets/colors/Colors';
 import { FONTFAMILY } from '../../../assets/fonts';
 import { LoadingModal } from '../../modal';
 import { ButtonComponent, RowComponent, SectionComponent, TextComponent } from '../../components';
+import authenticationAPI from '../../apis/authAPI';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { addAuth } from '../../redux/reducers/authReducer';
 
 const Verification = ({ navigation, route }: any) => {
     const { code, email, password, username} = route.params;
@@ -21,6 +25,7 @@ const Verification = ({ navigation, route }: any) => {
     const ref3 = useRef<any>();
     const ref4 = useRef<any>();
 
+    const dispatch = useDispatch();
     // khi người dùng vừa vào trang xác nhận nó sẽ nhảy ngay đến ref1 tương ứng TextInput thứ 1
     useEffect(() => {
         ref1.current.focus();
@@ -49,6 +54,62 @@ const Verification = ({ navigation, route }: any) => {
         data[index] = val;
 
         setCodeValues(data);
+    };
+
+    const handleResendVerification = async () => {
+        setCodeValues(['', '', '', '']); // khi người dùng send mã xác thực lần 2 nó sẽ reset lại thành rỗng
+        setNewCode('');
+
+        const api = `/verification`;
+        setIsLoading(true);
+        try {
+            const res: any = await authenticationAPI.HandleAuthentication(
+                api,
+                { email },
+                'post',
+            );
+
+            setLimit(120);
+            setCurrentCode(res.data.code);
+            setIsLoading(false);
+
+            console.log(res.data.code);
+        } catch (error) {
+            setIsLoading(false);
+            console.log(`Không thể gửi mã xác thực ${error}`);
+        }
+    };
+
+    const handleVerification = async () => {
+        if (limit > 0) {
+            if (parseInt(newCode) !== parseInt(currentCode)) {
+                setErrorMessage('Mã không hợp lệ!');
+            } else {
+                setErrorMessage('');
+
+                const api = `/register`;
+                const data = {
+                    email,
+                    password,
+                    username: username ?? '',
+                };
+
+                try {
+                    const res: any = await authenticationAPI.HandleAuthentication(
+                        api,
+                        data,
+                        'post',
+                    );
+                    dispatch(addAuth(res.data));
+                    await AsyncStorage.setItem('auth', JSON.stringify(res.data));
+                } catch (error) {
+                    setErrorMessage('Người dùng đã tồn tại!');
+                    console.log(`Không thể tạo người dùng mới ${error}`);
+                }
+            }
+        } else {
+            setErrorMessage('Mã xác minh hết thời gian chờ, vui lòng gửi lại mã mới!');
+        }
     };
 
     return (
@@ -121,8 +182,9 @@ const Verification = ({ navigation, route }: any) => {
             <SectionComponent styles={{ alignItems: 'center' }}>
                 <ButtonComponent 
                     disable= {newCode.length !== 4}
+                    onPress={handleVerification}
                     text='Tiếp Tục' 
-                    type='orange' 
+                    type='#009245' 
                     styles={{ width: '80%' }}
                      />
             </SectionComponent>
@@ -151,6 +213,7 @@ const Verification = ({ navigation, route }: any) => {
                         <ButtonComponent
                             type="link"
                             text="Gửi lại email xác thực"
+                            onPress={handleResendVerification}
                         />
                     </RowComponent>
                 )}

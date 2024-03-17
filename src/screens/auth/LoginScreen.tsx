@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Image, Switch } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Image, Switch } from 'react-native';
 import { ButtonComponent, InputComponent, KeyboardAvoidingWrapper, RowComponent, SectionComponent, TextComponent } from '../../components';
 import IMAGES from '../../assets/images/Images';
 import { FONTFAMILY } from '../../../assets/fonts';
@@ -7,14 +7,51 @@ import { Lock, Sms } from 'iconsax-react-native';
 import COLORS from '../../assets/colors/Colors';
 import { Facebook, Google } from '../../assets/svgs';
 import { globalStyle } from '../../styles/globalStyle';
+import authenticationAPI from '../../apis/authAPI';
+import { useDispatch } from 'react-redux';
+import { Validate } from '../../utils/validate';
+import { addAuth } from '../../redux/reducers/authReducer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }: any) => {
 
-    // Lấy dữ liệu
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isRemember, setIsRemember] = useState(true);
-    const [isDisable, setIsDisable] = useState(true);
+       // Lấy dữ liệu
+       const [email, setEmail] = useState('');
+       const [password, setPassword] = useState('');
+       const [isRemember, setIsRemember] = useState(true);
+       const [isDisable, setIsDisable] = useState(true);
+       const dispatch = useDispatch();
+   
+       useEffect(() => {
+           const emailValidation = Validate.email(email);
+       
+           if (!email || !password || !emailValidation) {
+             setIsDisable(true);
+           } else {
+             setIsDisable(false);
+           }
+         }, [email, password]);
+   
+       const handleLogin = async () => {
+   
+           const emailValidation = Validate.email(email);
+           if(emailValidation) {
+               try {
+                   const res = await authenticationAPI.HandleAuthentication('/login', {email, password}, 'post');
+                   dispatch(addAuth(res.data));
+                   await AsyncStorage.setItem(
+                       'auth',
+                       isRemember ? JSON.stringify(res.data) : email,
+                     );
+                   await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : email);
+               } catch (error) {
+                   console.log(error)
+               }
+   
+           } else {
+               Alert.alert('Email is not correct!!!');
+           }
+       }
 
     return (
         <KeyboardAvoidingWrapper>
@@ -53,8 +90,8 @@ const LoginScreen = ({ navigation }: any) => {
                 <RowComponent justify='space-between'>
                     <RowComponent onPress={() => setIsRemember(!isRemember)}>
                         <Switch
-                            trackColor={{ false: COLORS.WHITE, true: COLORS.HEX_ORANGE }}
-                            thumbColor={isRemember ? COLORS.WHITE : COLORS.HEX_ORANGE}
+                            trackColor={{ false: COLORS.WHITE, true: COLORS.GREEN }}
+                            thumbColor={isRemember ? COLORS.WHITE : COLORS.GREEN}
                             value={isRemember}
                             onChange={() => setIsRemember(!isRemember)} />
                         <TextComponent text='Ghi nhớ tài khoản' color={COLORS.HEX_BLACK} />
@@ -69,7 +106,8 @@ const LoginScreen = ({ navigation }: any) => {
                 <ButtonComponent
                     disable={isDisable}
                     text='ĐĂNG NHẬP'
-                    type='orange'
+                    type='#009245'
+                    onPress={handleLogin}
                 />
             </SectionComponent>
             <SectionComponent>
@@ -86,7 +124,7 @@ const LoginScreen = ({ navigation }: any) => {
                     <ButtonComponent
                         text='Google'
                         iconFlex='left'
-                        type='orange'
+                        type='#009245'
                         styles={globalStyle.shadow}
                         textColor={COLORS.HEX_LIGHT_GREY}
                         icon={<Google />}
@@ -94,7 +132,7 @@ const LoginScreen = ({ navigation }: any) => {
                     <ButtonComponent
                         text='Facebook'
                         iconFlex='left'
-                        type='orange'
+                        type='#009245'
                         styles={globalStyle.shadow}
                         textColor={COLORS.HEX_LIGHT_GREY}
                         icon={<Facebook />} />
